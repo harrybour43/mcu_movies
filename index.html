@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Cinematic Index - Tracker</title>
+    <title>Super-Verse Archive | Tracker</title>
     <style>
         :root {
             --bg: #0a0a0a;
             --card-bg: #141414;
             --border: #2a2a2a;
-            --accent: #00ff88; /* Verde para indicar progresso */
+            --accent: #00ff88;
             --text-main: #e0e0e0;
             --text-dim: #888888;
             --movie-tag: #0070f3;
@@ -18,151 +18,109 @@
 
         body {
             margin: 0;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, sans-serif;
             background-color: var(--bg);
             color: var(--text-main);
-            padding-top: 140px; /* Espaço para o header duplo */
+            padding-top: 150px;
         }
 
-        /* Header e Progress Bar */
+        /* HEADER E PROGRESSO */
         header {
             position: fixed;
-            top: 0;
-            width: 100%;
-            background: rgba(10, 10, 10, 0.9);
+            top: 0; width: 100%;
+            background: rgba(10, 10, 10, 0.95);
             backdrop-filter: blur(15px);
             border-bottom: 1px solid var(--border);
             z-index: 1000;
         }
 
-        .progress-container {
-            background: #1a1a1a;
-            height: 6px;
-            width: 100%;
-        }
+        .progress-container { background: #1a1a1a; height: 6px; width: 100%; }
+        #progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.4s; box-shadow: 0 0 10px var(--accent); }
 
-        #progress-bar {
-            height: 100%;
-            background: var(--accent);
-            width: 0%;
-            transition: width 0.4s ease;
-            box-shadow: 0 0 10px var(--accent);
-        }
-
-        .stats {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 10px 20px;
-            font-size: 12px;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: bold;
-        }
+        .stats { max-width: 1200px; margin: 0 auto; padding: 10px 20px; font-size: 11px; color: var(--accent); font-weight: bold; letter-spacing: 1px; }
 
         .filter-bar {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            padding: 15px 20px 25px 20px;
+            max-width: 1200px; margin: 0 auto;
+            display: flex; flex-wrap: wrap; gap: 15px;
+            padding: 10px 20px 20px 20px;
             align-items: flex-end;
         }
 
-        .filter-item { display: flex; flex-direction: column; gap: 8px; }
+        .filter-item { display: flex; flex-direction: column; gap: 5px; }
+        label { font-size: 9px; text-transform: uppercase; color: var(--text-dim); }
+        input, select { background: var(--card-bg); border: 1px solid var(--border); color: white; padding: 8px 12px; border-radius: 6px; outline: none; font-size: 13px; }
 
-        label { font-size: 10px; text-transform: uppercase; color: var(--text-dim); }
-
-        input, select {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
-            outline: none;
-        }
-
-        /* Grid */
+        /* GRID */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+            gap: 20px; padding: 20px; max-width: 1200px; margin: 0 auto;
         }
 
         .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.2s;
-            position: relative;
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 12px; padding: 20px; display: flex; flex-direction: column;
+            transition: all 0.2s; min-height: 140px;
         }
 
-        .card.watched { border-color: var(--accent); opacity: 0.8; }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        .type-tag { font-size: 9px; font-weight: bold; padding: 3px 6px; border-radius: 4px; }
-        .tag-filme { background: var(--movie-tag); }
-        .tag-série { background: var(--series-tag); }
-
-        .title { font-size: 1.2rem; font-weight: 700; margin: 10px 0; }
-
-        /* Estilização do Checkbox de Assistido */
-        .watched-control {
-            margin-top: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            font-size: 13px;
-            color: var(--text-dim);
-            padding-top: 15px;
-            border-top: 1px solid #222;
-        }
-
-        .watched-control input { cursor: pointer; accent-color: var(--accent); width: 18px; height: 18px; }
-
+        .card.watched { border-color: var(--accent); background: #0d1a14; }
         .card.watched .title { text-decoration: line-through; color: var(--text-dim); }
 
-        #sentinel { height: 50px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .type-tag { font-size: 9px; font-weight: bold; padding: 3px 6px; border-radius: 4px; text-transform: uppercase; color: white; }
+        .tag-filme { background: var(--movie-tag); }
+        .tag-série { background: var(--series-tag); }
+        .year { font-family: monospace; font-size: 12px; color: var(--text-dim); }
+
+        .title { font-size: 1.1rem; font-weight: 700; margin: 10px 0; line-height: 1.3; }
+
+        .watched-control {
+            margin-top: auto; display: flex; align-items: center; gap: 10px;
+            cursor: pointer; font-size: 12px; color: var(--text-dim);
+            padding-top: 15px; border-top: 1px solid #222;
+        }
+        .watched-control input { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
+
+        footer { padding: 60px; text-align: center; }
+        .reset-btn { background: transparent; color: #ff4444; border: 1px solid #ff4444; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 11px; }
+
+        #sentinel { height: 20px; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="progress-container"><div id="progress-bar"></div></div>
-        <div class="stats">Progresso da Coleção: <span id="percent-text">0%</span></div>
+        <div class="stats">ARQUIVO COMPLETADO: <span id="percent-text">0%</span></div>
         
         <div class="filter-bar">
+            <div class="filter-item" style="flex-grow: 1;">
+                <label>Busca rápida</label>
+                <input type="text" id="search" placeholder="Título da produção...">
+            </div>
             <div class="filter-item">
-                <label>Busca</label>
-                <input type="text" id="search" placeholder="Título...">
+                <label>Ordenar por</label>
+                <select id="sortFilter">
+                    <option value="year-desc">Mais recentes</option>
+                    <option value="year-asc">Mais antigos</option>
+                    <option value="az">Título A-Z</option>
+                    <option value="za">Título Z-A</option>
+                </select>
             </div>
             <div class="filter-item">
                 <label>Status</label>
                 <select id="statusFilter">
                     <option value="all">Todos</option>
-                    <option value="watched">Já assisti</option>
-                    <option value="unwatched">Não assisti</option>
+                    <option value="watched">Assistidos</option>
+                    <option value="unwatched">Faltando</option>
                 </select>
             </div>
             <div class="filter-item">
                 <label>Formato</label>
                 <select id="typeFilter">
-                    <option value="all">Todos</option>
-                    <option value="Filme">Longa</option>
-                    <option value="Série">Seriado</option>
+                    <option value="all">Tudo</option>
+                    <option value="Filme">Filmes</option>
+                    <option value="Série">Séries</option>
                 </select>
             </div>
         </div>
@@ -171,166 +129,106 @@
     <main class="grid" id="mainGrid"></main>
     <div id="sentinel"></div>
 
+    <footer>
+        <button class="reset-btn" onclick="resetLocalStorage()">Limpar todos os dados assistidos</button>
+    </footer>
+
     <script>
         const rawData = [
-    // --- FILMES (2000 - 2026) ---
-    { id: "M1", t: "X-Men", y: 2000, f: "Filme" },
-    { id: "M2", t: "Blade II", y: 2002, f: "Filme" },
-    { id: "M3", t: "Homem-Aranha", y: 2002, f: "Filme" },
-    { id: "M4", t: "Demolidor: O Homem Sem Medo", y: 2003, f: "Filme" },
-    { id: "M5", t: "X-Men 2", y: 2003, f: "Filme" },
-    { id: "M6", t: "Hulk", y: 2003, f: "Filme" },
-    { id: "M7", t: "O Justiceiro", y: 2004, f: "Filme" },
-    { id: "M8", t: "Homem-Aranha 2", y: 2004, f: "Filme" },
-    { id: "M9", t: "Blade: Trinity", y: 2004, f: "Filme" },
-    { id: "M10", t: "Elektra", y: 2005, f: "Filme" },
-    { id: "M11", t: "Quarteto Fantástico", y: 2005, f: "Filme" },
-    { id: "M12", t: "X-Men: O Confronto Final", y: 2006, f: "Filme" },
-    { id: "M13", t: "Motoqueiro Fantasma", y: 2007, f: "Filme" },
-    { id: "M14", t: "Homem-Aranha 3", y: 2007, f: "Filme" },
-    { id: "M15", t: "Quarteto Fantástico e o Surfista Prateado", y: 2007, f: "Filme" },
-    { id: "M16", t: "Homem de Ferro", y: 2008, f: "Filme" },
-    { id: "M17", t: "O Incrível Hulk", y: 2008, f: "Filme" },
-    { id: "M18", t: "O Justiceiro: Em Zona de Guerra", y: 2008, f: "Filme" },
-    { id: "M19", t: "X-Men Origens: Wolverine", y: 2009, f: "Filme" },
-    { id: "M20", t: "Homem de Ferro 2", y: 2010, f: "Filme" },
-    { id: "M21", t: "Thor", y: 2011, f: "Filme" },
-    { id: "M22", t: "X-Men: Primeira Classe", y: 2011, f: "Filme" },
-    { id: "M23", t: "Capitão América: O Primeiro Vingador", y: 2011, f: "Filme" },
-    { id: "M24", t: "Motoqueiro Fantasma: Espírito de Vingança", y: 2012, f: "Filme" },
-    { id: "M25", t: "Os Vingadores", y: 2012, f: "Filme" },
-    { id: "M26", t: "O Espetacular Homem-Aranha", y: 2012, f: "Filme" },
-    { id: "M27", t: "Homem de Ferro 3", y: 2013, f: "Filme" },
-    { id: "M28", t: "Wolverine: Imortal", y: 2013, f: "Filme" },
-    { id: "M29", t: "Thor: O Mundo Sombrio", y: 2013, f: "Filme" },
-    { id: "M30", t: "Capitão América: O Soldado Invernal", y: 2014, f: "Filme" },
-    { id: "M31", t: "O Espetacular Homem-Aranha 2", y: 2014, f: "Filme" },
-    { id: "M32", t: "X-Men: Dias de um Futuro Esquecido", y: 2014, f: "Filme" },
-    { id: "M33", t: "Guardiões da Galáxia", y: 2014, f: "Filme" },
-    { id: "M34", t: "Vingadores: Era de Ultron", y: 2015, f: "Filme" },
-    { id: "M35", t: "Homem-Formiga", y: 2015, f: "Filme" },
-    { id: "M36", t: "Quarteto Fantástico", y: 2015, f: "Filme" },
-    { id: "M37", t: "Deadpool", y: 2016, f: "Filme" },
-    { id: "M38", t: "Capitão América: Guerra Civil", y: 2016, f: "Filme" },
-    { id: "M39", t: "X-Men: Apocalipse", y: 2016, f: "Filme" },
-    { id: "M40", t: "Doutor Estranho", y: 2016, f: "Filme" },
-    { id: "M41", t: "Logan", y: 2017, f: "Filme" },
-    { id: "M42", t: "Guardiões da Galáxia Vol. 2", y: 2017, f: "Filme" },
-    { id: "M43", t: "Homem-Aranha: De Volta ao Lar", y: 2017, f: "Filme" },
-    { id: "M44", t: "Thor: Ragnarok", y: 2017, f: "Filme" },
-    { id: "M45", t: "Pantera Negra", y: 2018, f: "Filme" },
-    { id: "M46", t: "Vingadores: Guerra Infinita", y: 2018, f: "Filme" },
-    { id: "M47", t: "Deadpool 2", y: 2018, f: "Filme" },
-    { id: "M48", t: "Homem-Formiga e a Vespa", y: 2018, f: "Filme" },
-    { id: "M49", t: "Venom", y: 2018, f: "Filme" },
-    { id: "M50", t: "Homem-Aranha: No Aranhaverso", y: 2018, f: "Filme" },
-    { id: "M51", t: "Capitã Marvel", y: 2019, f: "Filme" },
-    { id: "M52", t: "Vingadores: Ultimato", y: 2019, f: "Filme" },
-    { id: "M53", t: "X-Men: Fênix Negra", y: 2019, f: "Filme" },
-    { id: "M54", t: "Homem-Aranha: Longe de Casa", y: 2019, f: "Filme" },
-    { id: "M55", t: "Os Novos Mutantes", y: 2020, f: "Filme" },
-    { id: "M56", t: "Viúva Negra", y: 2021, f: "Filme" },
-    { id: "M57", t: "Shang-Chi e a Lenda dos Dez Anéis", y: 2021, f: "Filme" },
-    { id: "M58", t: "Venom: Tempo de Carnificina", y: 2021, f: "Filme" },
-    { id: "M59", t: "Eternos", y: 2021, f: "Filme" },
-    { id: "M60", t: "Homem-Aranha: Sem Volta Para Casa", y: 2021, f: "Filme" },
-    { id: "M61", t: "Morbius", y: 2022, f: "Filme" },
-    { id: "M62", t: "Doutor Estranho no Multiverso da Loucura", y: 2022, f: "Filme" },
-    { id: "M63", t: "Thor: Amor e Trovão", y: 2022, f: "Filme" },
-    { id: "M64", t: "Pantera Negra: Wakanda Para Sempre", y: 2022, f: "Filme" },
-    { id: "M65", t: "Homem-Formiga e a Vespa: Quantumania", y: 2023, f: "Filme" },
-    { id: "M66", t: "Guardiões da Galáxia Vol. 3", y: 2023, f: "Filme" },
-    { id: "M67", t: "Homem-Aranha: Através do Aranhaverso", y: 2023, f: "Filme" },
-    { id: "M68", t: "As Marvels", y: 2023, f: "Filme" },
-    { id: "M69", t: "Madame Teia", y: 2024, f: "Filme" },
-    { id: "M70", t: "Deadpool & Wolverine", y: 2024, f: "Filme" },
-    { id: "M71", t: "Venom: A Última Rodada", y: 2024, f: "Filme" },
-    { id: "M72", t: "Kraven: O Caçador", y: 2024, f: "Filme" },
-    { id: "M73", t: "Capitão América: Admirável Mundo Novo", y: 2025, f: "Filme" },
-    { id: "M74", t: "Thunderbolts*", y: 2025, f: "Filme" },
-    { id: "M75", t: "O Quarteto Fantástico: Primeiros Passos", y: 2025, f: "Filme" },
-    { id: "M76", t: "Homem-Aranha: Brand New Day", y: 2026, f: "Filme" },
-    { id: "M77", t: "Vingadores: Doomsday", y: 2026, f: "Filme" },
+            // FILMES
+            { id: "M1", t: "X-Men", y: 2000, f: "Filme" }, { id: "M2", t: "Blade II", y: 2002, f: "Filme" },
+            { id: "M3", t: "Homem-Aranha", y: 2002, f: "Filme" }, { id: "M4", t: "Demolidor: O Homem Sem Medo", y: 2003, f: "Filme" },
+            { id: "M5", t: "X-Men 2", y: 2003, f: "Filme" }, { id: "M6", t: "Hulk", y: 2003, f: "Filme" },
+            { id: "M7", t: "O Justiceiro", y: 2004, f: "Filme" }, { id: "M8", t: "Homem-Aranha 2", y: 2004, f: "Filme" },
+            { id: "M9", t: "Blade: Trinity", y: 2004, f: "Filme" }, { id: "M10", t: "Elektra", y: 2005, f: "Filme" },
+            { id: "M11", t: "Quarteto Fantástico", y: 2005, f: "Filme" }, { id: "M12", t: "X-Men: O Confronto Final", y: 2006, f: "Filme" },
+            { id: "M13", t: "Motoqueiro Fantasma", y: 2007, f: "Filme" }, { id: "M14", t: "Homem-Aranha 3", y: 2007, f: "Filme" },
+            { id: "M15", t: "Quarteto Fantástico e o Surfista Prateado", y: 2007, f: "Filme" }, { id: "M16", t: "Homem de Ferro", y: 2008, f: "Filme" },
+            { id: "M17", t: "O Incrível Hulk", y: 2008, f: "Filme" }, { id: "M18", t: "O Justiceiro: Em Zona de Guerra", y: 2008, f: "Filme" },
+            { id: "M19", t: "X-Men Origens: Wolverine", y: 2009, f: "Filme" }, { id: "M20", t: "Homem de Ferro 2", y: 2010, f: "Filme" },
+            { id: "M21", t: "Thor", y: 2011, f: "Filme" }, { id: "M22", t: "X-Men: Primeira Classe", y: 2011, f: "Filme" },
+            { id: "M23", t: "Capitão América: O Primeiro Vingador", y: 2011, f: "Filme" }, { id: "M24", t: "Motoqueiro Fantasma: Espírito de Vingança", y: 2012, f: "Filme" },
+            { id: "M25", t: "Os Vingadores", y: 2012, f: "Filme" }, { id: "M26", t: "O Espetacular Homem-Aranha", y: 2012, f: "Filme" },
+            { id: "M27", t: "Homem de Ferro 3", y: 2013, f: "Filme" }, { id: "M28", t: "Wolverine: Imortal", y: 2013, f: "Filme" },
+            { id: "M29", t: "Thor: O Mundo Sombrio", y: 2013, f: "Filme" }, { id: "M30", t: "Capitão América: O Soldado Invernal", y: 2014, f: "Filme" },
+            { id: "M31", t: "O Espetacular Homem-Aranha 2", y: 2014, f: "Filme" }, { id: "M32", t: "X-Men: Dias de um Futuro Esquecido", y: 2014, f: "Filme" },
+            { id: "M33", t: "Guardiões da Galáxia", y: 2014, f: "Filme" }, { id: "M34", t: "Vingadores: Era de Ultron", y: 2015, f: "Filme" },
+            { id: "M35", t: "Homem-Formiga", y: 2015, f: "Filme" }, { id: "M36", t: "Quarteto Fantástico", y: 2015, f: "Filme" },
+            { id: "M37", t: "Deadpool", y: 2016, f: "Filme" }, { id: "M38", t: "Capitão América: Guerra Civil", y: 2016, f: "Filme" },
+            { id: "M39", t: "X-Men: Apocalipse", y: 2016, f: "Filme" }, { id: "M40", t: "Doutor Estranho", y: 2016, f: "Filme" },
+            { id: "M41", t: "Logan", y: 2017, f: "Filme" }, { id: "M42", t: "Guardiões da Galáxia Vol. 2", y: 2017, f: "Filme" },
+            { id: "M43", t: "Homem-Aranha: De Volta ao Lar", y: 2017, f: "Filme" }, { id: "M44", t: "Thor: Ragnarok", y: 2017, f: "Filme" },
+            { id: "M45", t: "Pantera Negra", y: 2018, f: "Filme" }, { id: "M46", t: "Vingadores: Guerra Infinita", y: 2018, f: "Filme" },
+            { id: "M47", t: "Deadpool 2", y: 2018, f: "Filme" }, { id: "M48", t: "Homem-Formiga e a Vespa", y: 2018, f: "Filme" },
+            { id: "M49", t: "Venom", y: 2018, f: "Filme" }, { id: "M50", t: "Homem-Aranha: No Aranhaverso", y: 2018, f: "Filme" },
+            { id: "M51", t: "Capitã Marvel", y: 2019, f: "Filme" }, { id: "M52", t: "Vingadores: Ultimato", y: 2019, f: "Filme" },
+            { id: "M53", t: "X-Men: Fênix Negra", y: 2019, f: "Filme" }, { id: "M54", t: "Homem-Aranha: Longe de Casa", y: 2019, f: "Filme" },
+            { id: "M55", t: "Os Novos Mutantes", y: 2020, f: "Filme" }, { id: "M56", t: "Viúva Negra", y: 2021, f: "Filme" },
+            { id: "M57", t: "Shang-Chi e a Lenda dos Dez Anéis", y: 2021, f: "Filme" }, { id: "M58", t: "Venom: Tempo de Carnificina", y: 2021, f: "Filme" },
+            { id: "M59", t: "Eternos", y: 2021, f: "Filme" }, { id: "M60", t: "Homem-Aranha: Sem Volta Para Casa", y: 2021, f: "Filme" },
+            { id: "M61", t: "Morbius", y: 2022, f: "Filme" }, { id: "M62", t: "Doutor Estranho no Multiverso da Loucura", y: 2022, f: "Filme" },
+            { id: "M63", t: "Thor: Amor e Trovão", y: 2022, f: "Filme" }, { id: "M64", t: "Pantera Negra: Wakanda Para Sempre", y: 2022, f: "Filme" },
+            { id: "M65", t: "Homem-Formiga e a Vespa: Quantumania", y: 2023, f: "Filme" }, { id: "M66", t: "Guardiões da Galáxia Vol. 3", y: 2023, f: "Filme" },
+            { id: "M67", t: "Homem-Aranha: Através do Aranhaverso", y: 2023, f: "Filme" }, { id: "M68", t: "As Marvels", y: 2023, f: "Filme" },
+            { id: "M69", t: "Madame Teia", y: 2024, f: "Filme" }, { id: "M70", t: "Deadpool & Wolverine", y: 2024, f: "Filme" },
+            { id: "M71", t: "Venom: A Última Rodada", y: 2024, f: "Filme" }, { id: "M72", t: "Kraven: O Caçador", y: 2024, f: "Filme" },
+            { id: "M73", t: "Capitão América: Admirável Mundo Novo", y: 2025, f: "Filme" }, { id: "M74", t: "Thunderbolts*", y: 2025, f: "Filme" },
+            { id: "M75", t: "O Quarteto Fantástico: Primeiros Passos", y: 2025, f: "Filme" }, { id: "M76", t: "Homem-Aranha: Brand New Day", y: 2026, f: "Filme" },
+            { id: "M77", t: "Vingadores: Doomsday", y: 2026, f: "Filme" },
 
-    // --- SÉRIES (2000 - 2026) ---
-    { id: "S1", t: "Mutante X", y: 2001, f: "Série" },
-    { id: "S2", t: "Blade: A Série", y: 2006, f: "Série" },
-    { id: "S3", t: "Agents of S.H.I.E.L.D.", y: 2013, f: "Série" },
-    { id: "S4", t: "Agent Carter", y: 2015, f: "Série" },
-    { id: "S5", t: "Demolidor (Netflix)", y: 2015, f: "Série" },
-    { id: "S6", t: "Jessica Jones", y: 2015, f: "Série" },
-    { id: "S7", t: "Luke Cage", y: 2016, f: "Série" },
-    { id: "S8", t: "Punho de Ferro", y: 2017, f: "Série" },
-    { id: "S9", t: "Os Defensores", y: 2017, f: "Série" },
-    { id: "S10", t: "Inumanos", y: 2017, f: "Série" },
-    { id: "S11", t: "The Punisher", y: 2017, f: "Série" },
-    { id: "S12", t: "Fugitivos (Runaways)", y: 2017, f: "Série" },
-    { id: "S13", t: "Legion", y: 2017, f: "Série" },
-    { id: "S14", t: "The Gifted", y: 2017, f: "Série" },
-    { id: "S15", t: "Manto e Adaga", y: 2018, f: "Série" },
-    { id: "S16", t: "Helstrom", y: 2020, f: "Série" },
-    { id: "S17", t: "WandaVision", y: 2021, f: "Série" },
-    { id: "S18", t: "Falcão e o Soldado Invernal", y: 2021, f: "Série" },
-    { id: "S19", t: "Loki", y: 2021, f: "Série" },
-    { id: "S20", t: "What If...?", y: 2021, f: "Série" },
-    { id: "S21", t: "Gavião Arqueiro", y: 2021, f: "Série" },
-    { id: "S22", t: "M.O.D.O.K.", y: 2021, f: "Série" },
-    { id: "S23", t: "Hit-Monkey", y: 2021, f: "Série" },
-    { id: "S24", t: "Cavaleiro da Lua", y: 2022, f: "Série" },
-    { id: "S25", t: "Ms. Marvel", y: 2022, f: "Série" },
-    { id: "S26", t: "Eu Sou Groot", y: 2022, f: "Série" },
-    { id: "S27", t: "Mulher-Hulk: Defensora de Heróis", y: 2022, f: "Série" },
-    { id: "S28", t: "Lobisomem na Noite (Especial)", y: 2022, f: "Série" },
-    { id: "S29", t: "Guardiões da Galáxia: Especial de Festas", y: 2022, f: "Série" },
-    { id: "S30", t: "Invasão Secreta", y: 2023, f: "Série" },
-    { id: "S31", t: "Echo", y: 2024, f: "Série" },
-    { id: "S32", t: "X-Men '97", y: 2024, f: "Série" },
-    { id: "S33", t: "Agatha Desde Sempre", y: 2024, f: "Série" },
-    { id: "S34", t: "Eyes of Wakanda", y: 2025, f: "Série" },
-    { id: "S35", t: "Marvel Zombies", y: 2025, f: "Série" },
-    { id: "S36", t: "Wonder Man", y: 2026, f: "Série" },
-    { id: "S37", t: "Spider-Noir", y: 2026, f: "Série" },
-    { id: "S38", t: "Daredevil: Born Again", y: 2026, f: "Série" },
-    { id: "S39", t: "Ironheart", y: 2026, f: "Série" },
-    { id: "S40", t: "Vision Quest", y: 2026, f: "Série" }
-];
+            // SÉRIES
+            { id: "S1", t: "Mutante X", y: 2001, f: "Série" }, { id: "S2", t: "Blade: A Série", y: 2006, f: "Série" },
+            { id: "S3", t: "Agents of S.H.I.E.L.D.", y: 2013, f: "Série" }, { id: "S4", t: "Agent Carter", y: 2015, f: "Série" },
+            { id: "S5", t: "Demolidor (Netflix)", y: 2015, f: "Série" }, { id: "S6", t: "Jessica Jones", y: 2015, f: "Série" },
+            { id: "S7", t: "Luke Cage", y: 2016, f: "Série" }, { id: "S8", t: "Punho de Ferro", y: 2017, f: "Série" },
+            { id: "S9", t: "Os Defensores", y: 2017, f: "Série" }, { id: "S10", t: "Inumanos", y: 2017, f: "Série" },
+            { id: "S11", t: "The Punisher", y: 2017, f: "Série" }, { id: "S12", t: "Fugitivos (Runaways)", y: 2017, f: "Série" },
+            { id: "S13", t: "Legion", y: 2017, f: "Série" }, { id: "S14", t: "The Gifted", y: 2017, f: "Série" },
+            { id: "S15", t: "Manto e Adaga", y: 2018, f: "Série" }, { id: "S16", t: "Helstrom", y: 2020, f: "Série" },
+            { id: "S17", t: "WandaVision", y: 2021, f: "Série" }, { id: "S18", t: "Falcão e o Soldado Invernal", y: 2021, f: "Série" },
+            { id: "S19", t: "Loki", y: 2021, f: "Série" }, { id: "S20", t: "What If...?", y: 2021, f: "Série" },
+            { id: "S21", t: "Gavião Arqueiro", y: 2021, f: "Série" }, { id: "S22", t: "M.O.D.O.K.", y: 2021, f: "Série" },
+            { id: "S23", t: "Hit-Monkey", y: 2021, f: "Série" }, { id: "S24", t: "Cavaleiro da Lua", y: 2022, f: "Série" },
+            { id: "S25", t: "Ms. Marvel", y: 2022, f: "Série" }, { id: "S26", t: "Eu Sou Groot", y: 2022, f: "Série" },
+            { id: "S27", t: "Mulher-Hulk: Defensora de Heróis", y: 2022, f: "Série" }, { id: "S28", t: "Lobisomem na Noite (Especial)", y: 2022, f: "Série" },
+            { id: "S29", t: "Guardiões da Galáxia: Especial de Festas", y: 2022, f: "Série" }, { id: "S30", t: "Invasão Secreta", y: 2023, f: "Série" },
+            { id: "S31", t: "Echo", y: 2024, f: "Série" }, { id: "S32", t: "X-Men '97", y: 2024, f: "Série" },
+            { id: "S33", t: "Agatha Desde Sempre", y: 2024, f: "Série" }, { id: "S34", t: "Eyes of Wakanda", y: 2025, f: "Série" },
+            { id: "S35", t: "Marvel Zombies", y: 2025, f: "Série" }, { id: "S36", t: "Wonder Man", y: 2026, f: "Série" },
+            { id: "S37", t: "Spider-Noir", y: 2026, f: "Série" }, { id: "S38", t: "Daredevil: Born Again", y: 2026, f: "Série" },
+            { id: "S39", t: "Ironheart", y: 2026, f: "Série" }, { id: "S40", t: "Vision Quest", y: 2026, f: "Série" }
+        ];
+
         let watchedIds = JSON.parse(localStorage.getItem('watched_list')) || [];
-    let currentData = [...rawData];
-    let itemsToShow = 12;
+        let currentData = [...rawData];
+        let itemsToShow = 12;
 
-    function updateProgress() {
-        // CORREÇÃO: Filtra para contar apenas IDs que existem na rawData atual
-        const validWatchedCount = watchedIds.filter(id => 
-            rawData.some(item => item.id === id)
-        ).length;
+        function updateProgress() {
+            const validWatched = watchedIds.filter(id => rawData.some(item => item.id === id));
+            const percent = rawData.length > 0 ? Math.round((validWatched.length / rawData.length) * 100) : 0;
+            document.getElementById('progress-bar').style.width = percent + '%';
+            document.getElementById('percent-text').innerText = `${percent}% (${validWatched.length}/${rawData.length})`;
+        }
 
-        const total = rawData.length;
-        const percent = total > 0 ? Math.round((validWatchedCount / total) * 100) : 0;
-        
-        document.getElementById('progress-bar').style.width = percent + '%';
-        document.getElementById('percent-text').innerText = `${percent}% (${validWatchedCount}/${total})`;
-    }
-
-    // Função para limpar o lixo de IDs antigos do localStorage
-    function resetLocalStorage() {
-        if(confirm("Deseja zerar todo o seu progresso assistido?")) {
-            watchedIds = [];
-            localStorage.setItem('watched_list', JSON.stringify([]));
+        function toggleWatched(id) {
+            if (watchedIds.includes(id)) {
+                watchedIds = watchedIds.filter(i => i !== id);
+            } else {
+                watchedIds.push(id);
+            }
+            localStorage.setItem('watched_list', JSON.stringify(watchedIds));
             updateProgress();
-            filterAndSort();
+            render();
         }
-    }
 
-    function toggleWatched(id) {
-        if (watchedIds.includes(id)) {
-            watchedIds = watchedIds.filter(i => i !== id);
-        } else {
-            watchedIds.push(id);
+        function resetLocalStorage() {
+            if(confirm("Zerar todo o progresso?")) {
+                watchedIds = [];
+                localStorage.setItem('watched_list', JSON.stringify([]));
+                updateProgress();
+                filterAndSort();
+            }
         }
-        localStorage.setItem('watched_list', JSON.stringify(watchedIds));
-        updateProgress();
-        render(); // Renderização rápida apenas para atualizar o estado do card
-    }
 
         function render() {
             const grid = document.getElementById('mainGrid');
@@ -343,12 +241,12 @@
                 card.innerHTML = `
                     <div class="card-header">
                         <span class="type-tag tag-${item.f.toLowerCase()}">${item.f}</span>
-                        <span class="year" style="color:var(--text-dim); font-size:12px;">${item.y}</span>
+                        <span class="year">${item.y}</span>
                     </div>
                     <div class="title">${item.t}</div>
                     <label class="watched-control">
                         <input type="checkbox" ${isWatched ? 'checked' : ''} onchange="toggleWatched('${item.id}')">
-                        ${isWatched ? 'Assistido' : 'Marcar como assistido'}
+                        ${isWatched ? 'Já assisti' : 'Não assistido'}
                     </label>
                 `;
                 grid.appendChild(card);
@@ -359,7 +257,9 @@
             const search = document.getElementById('search').value.toLowerCase();
             const type = document.getElementById('typeFilter').value;
             const status = document.getElementById('statusFilter').value;
+            const sort = document.getElementById('sortFilter').value;
 
+            // 1. Filtrar
             currentData = rawData.filter(i => {
                 const matchSearch = i.t.toLowerCase().includes(search);
                 const matchType = type === 'all' || i.f === type;
@@ -367,39 +267,37 @@
                 const matchStatus = status === 'all' || 
                                    (status === 'watched' && isWatched) || 
                                    (status === 'unwatched' && !isWatched);
-                
                 return matchSearch && matchType && matchStatus;
             });
 
+            // 2. Ordenar
+            if (sort === 'year-desc') currentData.sort((a,b) => b.y - a.y);
+            if (sort === 'year-asc') currentData.sort((a,b) => a.y - b.y);
+            if (sort === 'az') currentData.sort((a,b) => a.t.localeCompare(b.t));
+            if (sort === 'za') currentData.sort((a,b) => b.t.localeCompare(a.t));
+
+            itemsToShow = 12;
             render();
         }
 
-        // Observer para Scroll Infinito
+        // SCROLL INFINITO
         const observer = new IntersectionObserver((entries) => {
             if (entries[0].isIntersecting && itemsToShow < currentData.length) {
-                itemsToShow += 8;
+                itemsToShow += 12;
                 render();
             }
         });
-
         observer.observe(document.getElementById('sentinel'));
 
-        // Listeners
+        // LISTENERS
         document.getElementById('search').addEventListener('input', filterAndSort);
         document.getElementById('typeFilter').addEventListener('change', filterAndSort);
         document.getElementById('statusFilter').addEventListener('change', filterAndSort);
+        document.getElementById('sortFilter').addEventListener('change', filterAndSort);
 
-        // Início
+        // INIT
         updateProgress();
         filterAndSort();
-
     </script>
-
-    <footer style="padding: 40px; text-align: center;">
-    <button onclick="resetLocalStorage()" style="background: transparent; color: #ff4444; border: 1px solid #ff4444; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 12px; text-transform: uppercase;">
-        Limpar todo o progresso
-    </button>
-</footer>
-    
 </body>
 </html>
