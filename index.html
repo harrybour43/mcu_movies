@@ -295,28 +295,42 @@
     { id: "S40", t: "Vision Quest", y: 2026, f: "Série" }
 ];
         let watchedIds = JSON.parse(localStorage.getItem('watched_list')) || [];
-        let currentData = [...rawData];
-        let itemsToShow = 12;
+    let currentData = [...rawData];
+    let itemsToShow = 12;
 
-        function updateProgress() {
-            const total = rawData.length;
-            const watched = watchedIds.length;
-            const percent = total > 0 ? Math.round((watched / total) * 100) : 0;
-            
-            document.getElementById('progress-bar').style.width = percent + '%';
-            document.getElementById('percent-text').innerText = `${percent}% (${watched}/${total})`;
-        }
+    function updateProgress() {
+        // CORREÇÃO: Filtra para contar apenas IDs que existem na rawData atual
+        const validWatchedCount = watchedIds.filter(id => 
+            rawData.some(item => item.id === id)
+        ).length;
 
-        function toggleWatched(id) {
-            if (watchedIds.includes(id)) {
-                watchedIds = watchedIds.filter(i => i !== id);
-            } else {
-                watchedIds.push(id);
-            }
-            localStorage.setItem('watched_list', JSON.stringify(watchedIds));
+        const total = rawData.length;
+        const percent = total > 0 ? Math.round((validWatchedCount / total) * 100) : 0;
+        
+        document.getElementById('progress-bar').style.width = percent + '%';
+        document.getElementById('percent-text').innerText = `${percent}% (${validWatchedCount}/${total})`;
+    }
+
+    // Função para limpar o lixo de IDs antigos do localStorage
+    function resetLocalStorage() {
+        if(confirm("Deseja zerar todo o seu progresso assistido?")) {
+            watchedIds = [];
+            localStorage.setItem('watched_list', JSON.stringify([]));
             updateProgress();
-            filterAndSort(); // Re-renderiza para aplicar filtros de status
+            filterAndSort();
         }
+    }
+
+    function toggleWatched(id) {
+        if (watchedIds.includes(id)) {
+            watchedIds = watchedIds.filter(i => i !== id);
+        } else {
+            watchedIds.push(id);
+        }
+        localStorage.setItem('watched_list', JSON.stringify(watchedIds));
+        updateProgress();
+        render(); // Renderização rápida apenas para atualizar o estado do card
+    }
 
         function render() {
             const grid = document.getElementById('mainGrid');
@@ -380,5 +394,12 @@
         filterAndSort();
 
     </script>
+
+    <footer style="padding: 40px; text-align: center;">
+    <button onclick="resetLocalStorage()" style="background: transparent; color: #ff4444; border: 1px solid #ff4444; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 12px; text-transform: uppercase;">
+        Limpar todo o progresso
+    </button>
+</footer>
+    
 </body>
 </html>
