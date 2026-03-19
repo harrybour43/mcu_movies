@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Cinematic Index</title>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --card-bg: #141414;
+            --border: #2a2a2a;
+            --accent: #ffffff;
+            --text-main: #e0e0e0;
+            --text-dim: #888888;
+            --movie-tag: #0070f3;
+            --series-tag: #7928ca;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+        }
+
+        /* Header e Filtros */
+        header {
+            position: sticky;
+            top: 0;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .filter-bar {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+        }
+
+        input, select {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+        input:focus { border-color: var(--accent); }
+
+        /* Grid de Produções */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 180px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .card:hover {
+            border-color: #444;
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .type-tag {
+            font-size: 10px;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .tag-filme { background: var(--movie-tag); }
+        .tag-série { background: var(--series-tag); }
+
+        .year {
+            font-family: monospace;
+            color: var(--text-dim);
+            font-size: 14px;
+        }
+
+        .title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin: 10px 0;
+        }
+
+        .characters {
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-top: auto;
+            border-top: 1px solid #222;
+            padding-top: 15px;
+        }
+
+        /* Sentinel para Scroll Infinito */
+        #sentinel {
+            height: 40px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="filter-bar">
+            <div class="filter-item">
+                <label>Busca</label>
+                <input type="text" id="search" placeholder="Título ou personagem...">
+            </div>
+            <div class="filter-item">
+                <label>Formato</label>
+                <select id="typeFilter">
+                    <option value="all">Todos</option>
+                    <option value="Filme">Longa Metragem</option>
+                    <option value="Série">Seriado</option>
+                </select>
+            </div>
+            <div class="filter-item">
+                <label>Ordenar</label>
+                <select id="sortFilter">
+                    <option value="date-desc">Novos primeiro</option>
+                    <option value="date-asc">Antigos primeiro</option>
+                    <option value="az">A - Z</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <main class="grid" id="mainGrid"></main>
+    <div id="sentinel"></div>
+
+    <script>
+        // Dados brutos (Amostra dos últimos 10 anos)
+        const rawData = [
+            { t: "Capitão América: Guerra Civil", y: 2016, f: "Filme", c: "Capitão América, Homem de Ferro" },
+            { t: "Doutor Estranho", y: 2016, f: "Filme", c: "Stephen Strange" },
+            { t: "Guardiões da Galáxia Vol. 2", y: 2017, f: "Filme", c: "Star-Lord, Gamora" },
+            { t: "Homem-Aranha: De Volta ao Lar", y: 2017, f: "Filme", c: "Peter Parker" },
+            { t: "Thor: Ragnarok", y: 2017, f: "Filme", c: "Thor, Hulk" },
+            { t: "Punho de Ferro", y: 2017, f: "Série", c: "Danny Rand" },
+            { t: "Pantera Negra", y: 2018, f: "Filme", c: "T'Challa" },
+            { t: "Vingadores: Guerra Infinita", y: 2018, f: "Filme", c: "Thanos, Vingadores" },
+            { t: "Demolidor (T3)", y: 2018, f: "Série", c: "Matt Murdock" },
+            { t: "Vingadores: Ultimato", y: 2019, f: "Filme", c: "Vingadores" },
+            { t: "WandaVision", y: 2021, f: "Série", c: "Wanda, Visão" },
+            { t: "Loki", y: 2021, f: "Série", c: "Loki" },
+            { t: "Homem-Aranha: Sem Volta Para Casa", y: 2021, f: "Filme", c: "Peter Parker, Multiverso" },
+            { t: "Cavaleiro da Lua", y: 2022, f: "Série", c: "Marc Spector" },
+            { t: "Pantera Negra: Wakanda Para Sempre", y: 2022, f: "Filme", c: "Shuri, Namor" },
+            { t: "Guardiões da Galáxia Vol. 3", y: 2023, f: "Filme", c: "Rocket, Star-Lord" },
+            { t: "X-Men '97", y: 2024, f: "Série", c: "Ciclope, Tempestade" },
+            { t: "Deadpool & Wolverine", y: 2024, f: "Filme", c: "Wade Wilson, Logan" },
+            { t: "Agatha Desde Sempre", y: 2024, f: "Série", c: "Agatha Harkness" },
+            { t: "Daredevil: Born Again", y: 2026, f: "Série", c: "Matt Murdock, Wilson Fisk" }
+        ];
+
+        let currentData = [...rawData];
+        let itemsToShow = 8;
+        const grid = document.getElementById('mainGrid');
+
+        function render() {
+            grid.innerHTML = '';
+            const list = currentData.slice(0, itemsToShow);
+            
+            list.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <span class="type-tag tag-${item.f.toLowerCase()}">${item.f}</span>
+                        <span class="year">${item.y}</span>
+                    </div>
+                    <div class="title">${item.t}</div>
+                    <div class="characters">${item.c}</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterAndSort() {
+            const search = document.getElementById('search').value.toLowerCase();
+            const type = document.getElementById('typeFilter').value;
+            const sort = document.getElementById('sortFilter').value;
+
+            currentData = rawData.filter(i => {
+                const matchSearch = i.t.toLowerCase().includes(search) || i.c.toLowerCase().includes(search);
+                const matchType = type === 'all' || i.f === type;
+                return matchSearch && matchType;
+            });
+
+            if (sort === 'date-desc') currentData.sort((a,b) => b.y - a.y);
+            if (sort === 'date-asc') currentData.sort((a,b) => a.y - b.y);
+            if (sort === 'az') currentData.sort((a,b) => a.t.localeCompare(b.t));
+
+            itemsToShow = 8;
+            render();
+        }
+
+        // Scroll Infinito com Intersection Observer
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting && itemsToShow < currentData.length) {
+                itemsToShow += 4;
+                render();
+            }
+        }, { threshold: 1.0 });
+
+        observer.observe(document.getElementById('sentinel'));
+
+        // Eventos
+        document.getElementById('search').addEventListener('input', filterAndSort);
+        document.getElementById('typeFilter').addEventListener('change', filterAndSort);
+        document.getElementById('sortFilter').addEventListener('change', filterAndSort);
+
+        // Inicialização
+        filterAndSort();
+    </script>
+</body>
+</html>
